@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelCo API Documentation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #007bff;
+            margin-top: 30px;
+        }
+        .endpoint {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .get { background-color: #28a745; }
+        .post { background-color: #007bff; }
+        .put { background-color: #ffc107; color: #212529; }
+        .delete { background-color: #dc3545; }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        .working { background-color: #d4edda; color: #155724; }
+        .demo-section {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        code {
+            background: #f1f1f1;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .feature {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌍 TravelCo Tourism REST API</h1>
+        
+        <div class="demo-section">
+            <h2>🚀 API Status: Fully Operational</h2>
+            <p><strong>Base URL:</strong> <code>http://localhost:5000/api</code></p>
+            <p><strong>Database:</strong> PostgreSQL with Drizzle ORM</p>
+            <p><strong>Authentication:</strong> Session-based with Passport.js</p>
+            <p><strong>Security:</strong> Helmet.js protection enabled</p>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <h3>✅ User Management</h3>
+                <p>Complete registration and authentication system with admin role support</p>
+            </div>
+            <div class="feature">
+                <h3>✅ Service Catalog</h3>
+                <p>CRUD operations for tourism packages (stays, flights, car rentals)</p>
+            </div>
+            <div class="feature">
+                <h3>✅ Shopping Cart</h3>
+                <p>Add/remove items, quantity management, automatic pricing</p>
+            </div>
+            <div class="feature">
+                <h3>✅ Order Processing</h3>
+                <p>Cart confirmation, order tracking, payment status management</p>
+            </div>
+            <div class="feature">
+                <h3>✅ Invoicing System</h3>
+                <p>Automatic invoice generation and payment tracking</p>
+            </div>
+            <div class="feature">
+                <h3>✅ Email Notifications</h3>
+                <p>Order confirmations and company notifications (SMTP configured)</p>
+            </div>
+        </div>
+
+        <h2>📋 API Endpoints</h2>
+
+        <h3>Authentication</h3>
+        <div class="endpoint">
+            <span class="method post">POST</span> <code>/api/register</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Register new users with name, email, password, and optional isAdmin flag</p>
+        </div>
+        <div class="endpoint">
+            <span class="method post">POST</span> <code>/api/login</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Login with username (email) and password</p>
+        </div>
+        <div class="endpoint">
+            <span class="method get">GET</span> <code>/api/user</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Get current authenticated user profile</p>
+        </div>
+        <div class="endpoint">
+            <span class="method post">POST</span> <code>/api/logout</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Logout current session</p>
+        </div>
+
+        <h3>Services Management</h3>
+        <div class="endpoint">
+            <span class="method get">GET</span> <code>/api/services</code>
+            <span class="status working">✓ WORKING</span>
+            <p>List all tourism services (public access)</p>
+        </div>
+        <div class="endpoint">
+            <span class="method get">GET</span> <code>/api/services/:id</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Get specific service details (public access)</p>
+        </div>
+        <div class="endpoint">
+            <span class="method post">POST</span> <code>/api/services</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Create new service (Admin only)</p>
+        </div>
+        <div class="endpoint">
+            <span class="method put">PUT</span> <code>/api/services/:id</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Update service (Admin only)</p>
+        </div>
+        <div class="endpoint">
+            <span class="method delete">DELETE</span> <code>/api/services/:id</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Delete service (Admin only)</p>
+        </div>
+
+        <h3>Shopping Cart</h3>
+        <div class="endpoint">
+            <span class="method post">POST</span> <code>/api/cart</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Create or get active cart (Authenticated users)</p>
+        </div>
+        <div class="endpoint">
+            <span class="method get">GET</span> <code>/api/cart</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Get cart with items and total (Authenticated users)</p>
+        </div>
+        <div class="endpoint">
+            <span class="method post">POST</span> <code>/api/cart/item</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Add item to cart (serviceId, quantity)</p>
+        </div>
+        <div class="endpoint">
+            <span class="method put">PUT</span> <code>/api/cart/item/:id</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Update cart item quantity</p>
+        </div>
+        <div class="endpoint">
+            <span class="method delete">DELETE</span> <code>/api/cart/item/:id</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Remove item from cart</p>
+        </div>
+
+        <h3>Order Management</h3>
+        <div class="endpoint">
+            <span class="method post">POST</span> <code>/api/cart/confirm</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Confirm cart as order, create invoice, send emails</p>
+        </div>
+        <div class="endpoint">
+            <span class="method get">GET</span> <code>/api/orders</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Get orders (user's orders or all for admin)</p>
+        </div>
+        <div class="endpoint">
+            <span class="method get">GET</span> <code>/api/orders/:id</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Get specific order with details</p>
+        </div>
+        <div class="endpoint">
+            <span class="method post">POST</span> <code>/api/orders/:id/update-payment</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Update order payment status (Admin only)</p>
+        </div>
+
+        <h3>Invoicing</h3>
+        <div class="endpoint">
+            <span class="method get">GET</span> <code>/api/invoices</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Get invoices (with optional orderId filter)</p>
+        </div>
+        <div class="endpoint">
+            <span class="method post">POST</span> <code>/api/invoices/:id/register-payment</code>
+            <span class="status working">✓ WORKING</span>
+            <p>Register payment for invoice (Admin only)</p>
+        </div>
+
+        <div class="demo-section">
+            <h2>🧪 Live Demo Data</h2>
+            <p><strong>Test Users Created:</strong></p>
+            <ul>
+                <li><strong>Regular User:</strong> john@example.com / password123</li>
+                <li><strong>Admin User:</strong> admin@travelco.com / admin123</li>
+            </ul>
+            
+            <p><strong>Sample Services Available:</strong></p>
+            <ul>
+                <li>Luxury Beach Resort - Cancun ($299.99)</li>
+                <li>Round-trip Flight to Paris ($899.00)</li>
+                <li>Premium Car Rental - European Tour ($89.99/day)</li>
+            </ul>
+
+            <p><strong>Completed Test Order:</strong></p>
+            <ul>
+                <li>Order ID: 1</li>
+                <li>Total: $1,198.99</li>
+                <li>Status: Paid</li>
+                <li>Invoice: Generated and updated</li>
+            </ul>
+        </div>
+
+        <div class="demo-section">
+            <h2>🔧 Technical Stack</h2>
+            <ul>
+                <li><strong>Backend:</strong> Node.js + Express.js + TypeScript</li>
+                <li><strong>Database:</strong> PostgreSQL with Drizzle ORM</li>
+                <li><strong>Authentication:</strong> Passport.js with bcrypt</li>
+                <li><strong>Security:</strong> Helmet.js, input validation</li>
+                <li><strong>Email:</strong> Nodemailer with TLS support</li>
+                <li><strong>Validation:</strong> Zod schemas</li>
+            </ul>
+        </div>
+
+        <p style="text-align: center; margin-top: 40px; color: #666;">
+            <strong>TravelCo REST API - Full Backend Implementation Complete</strong><br>
+            All endpoints tested and verified working. Ready for production deployment.
+        </p>
+    </div>
+</body>
+</html>
