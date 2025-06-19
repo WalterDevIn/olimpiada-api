@@ -1,0 +1,134 @@
+Generate a RESTful API backend using Node.js, Express.js, and PostgreSQL for a leading tourism company selling national and international travel packages.
+
+**Technology stack:**  
+Node.js, Express.js, PostgreSQL, Helmet.js (HTTP security), bcrypt (password hashing), jsonwebtoken (JWT, internal auth only), dotenv (env variables), nodemailer (secure email via TLS), pg (PostgreSQL client).
+
+---
+
+**Functional requirements:**
+
+1. **User Management:**  
+   - Register new users with basic data.  
+   - Secure login with JWT authentication.  
+   - Password recovery (optional).
+
+2. **Catalog & Navigation:**  
+   - List tourist packages (stays, flights, car rentals, combo packages).  
+   - Support basic search and filtering.
+
+3. **Shopping Cart:**  
+   - Add/remove packages to/from cart.  
+   - Modify item quantities.  
+   - View order summary with prices and total.
+
+4. **Order Management:**  
+   - Confirm cart as order, process it.  
+   - Track order status (pending_payment, paid, canceled).  
+   - Email notifications to client and company on confirmation.  
+   - Sales manager can query and modify orders.
+
+5. **Sales Manager Panel:**  
+   - Exclusive access with special credentials (isAdmin boolean flag).  
+   - CRUD operations on tourist products.  
+   - View simple sales and order reports.  
+   - Manage invoicing and issue invoices.
+
+6. **Communication & Notifications:**  
+   - Automated sending of confirmation and follow-up emails via nodemailer.  
+   - Clear error and success messages.
+
+---
+
+**Data Models:**
+
+- **User:**  
+  `id (PK), name, email, passwordHash, isAdmin (boolean), registrationDate`
+
+- **Service (Tourist Package):**  
+  `id (PK), serviceType (enum: stay, flight, car_rental, package), name, description, unitPrice, additionalDetails (JSON)`
+
+- **Cart:**  
+  `id (PK), userId (FK), creationDate, status (enum: active, confirmed, canceled)`
+
+- **CartItem:**  
+  `id (PK), cartId (FK), serviceId (FK), quantity, unitPrice`
+
+- **Order:**  
+  `id (PK), userId (FK), cartId (FK), confirmationDate, status (enum: pending_payment, paid, canceled), total`
+
+- **Invoice:**  
+  `id (PK), orderId (FK), amount, issueDate, paymentStatus (enum: pending, paid)`
+
+- **NotificationEmail:**  
+  `id (PK), sector (sales, administration, logistics), destinationEmail`
+
+---
+
+**API Endpoints:**
+
+- **Authentication:**  
+  `POST /auth/register`  
+  `POST /auth/login`  
+  `GET /auth/profile`  
+  `POST /auth/recover-password` (optional)
+
+- **Services (Admin):**  
+  `POST /services`  
+  `GET /services`  
+  `GET /services/:id`  
+  `PUT /services/:id`  
+  `DELETE /services/:id`
+
+- **Shopping Cart (Client):**  
+  `POST /cart`  
+  `GET /cart`  
+  `POST /cart/item`  
+  `PUT /cart/item/:id`  
+  `DELETE /cart/item/:id`
+
+- **Order Confirmation & Management:**  
+  `POST /cart/confirm`  
+  `GET /orders`  
+  `GET /orders/:id`  
+  `GET /orders?status=paid|pending_payment` (Admin)  
+  `POST /orders/:id/update-payment` (Admin)
+
+- **Invoicing:**  
+  `GET /invoices`  
+  `POST /invoices/:id/register-payment`
+
+---
+
+**Non-functional requirements:**
+
+- Password hashing with bcrypt.  
+- Secure JWT-based authentication; no third-party auth services.  
+- Role-based access: `isAdmin` flag (true for admins, false for clients).  
+- Input validation and sanitization to prevent SQL injection and XSS.  
+- Helmet.js for secure HTTP headers.  
+- Secure session management.  
+- Email sending using TLS.  
+- Response time under 3 seconds.  
+- Optimized and scalable database queries.  
+- Modular, organized, and documented code.  
+- Clear user messages.  
+- Availability during business hours with backup strategy (note: implementation optional).
+
+---
+
+**Exclusions:**  
+- No frontend code.  
+- No third-party reservation engine integration.  
+- No payment gateway processing (only payment records).  
+- No marketing features, advanced dashboards, or advanced search.
+
+---
+
+**Additional notes:**  
+- Use internal JWT authentication only.  
+- Admin users identified by a boolean flag in user model.  
+- Email notifications sent automatically upon order confirmation.
+
+---
+
+Generate all necessary backend code, data models, routes, controllers, middleware, and configuration files to satisfy the above requirements.
