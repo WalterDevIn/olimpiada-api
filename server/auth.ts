@@ -77,7 +77,12 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/login", passport.authenticate("local"), (req, res) => {
-    res.status(200).json(req.user);
+    // Generate a simple token for API testing tools that can't handle cookies
+    const token = Buffer.from(`${req.user!.id}:${req.user!.email}:${Date.now()}`).toString('base64');
+    res.status(200).json({ 
+      ...req.user, 
+      token: token // Include token for tools like Hoppscotch
+    });
   });
 
   app.post("/api/logout", (req, res, next) => {
@@ -87,8 +92,47 @@ export function setupAuth(app: Express) {
     });
   });
 
-  app.get("/api/user", (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
+  // Middleware to check both session and Authorization header
+  const requireAuth = (req: any, res: any, next: any) => {
+    // Check session first
+    if (req.isAuthenticated()) {
+      return next();
+    }
+    
+    // Check Authorization header for API testing tools
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      try {
+        const decoded = Buffer.from(token, 'base64').toString();
+        const [userId] = decoded.split(':');
+        
+        // Simple token validation - in production use proper JWT
+        if (userId) {
+          storage.getUser(parseInt(userId)).then(user => {
+            if (user) {
+              req.user = user;
+              return next();
+            }
+            return res.status(401).json({ message: "Invalid token" });
+          }).catch(() => {
+            return res.status(401).json({ message: "Invalid token" });
+          });
+        } else {
+          return res.status(401).json({ message: "Invalid token format" });
+        }
+      } catch (error) {
+        return res.status(401).json({ message: "Invalid token format" });
+      }
+    } else {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+  }
+
+  app.get("/api/user", requireAuth, (req, res) => {
     res.json(req.user);
   });
+
+  // Export the requireAuth middleware for use in other routes
+  return { requireAuth };
 }
