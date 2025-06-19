@@ -292,8 +292,8 @@
                 <div class="test-section">
                     <h3>2. Test API Endpoints</h3>
                     <div class="form-group">
-                        <label>Your Token:</label>
-                        <input type="text" id="authToken" placeholder="Token will appear here after login" readonly>
+                        <label>Authentication Status:</label>
+                        <input type="text" id="authToken" placeholder="Please login first" readonly>
                     </div>
                     
                     <div class="endpoint-test">
@@ -418,6 +418,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
+                    credentials: 'include',
                     body: JSON.stringify({
                         username: email,
                         password: password
@@ -427,10 +428,9 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    currentToken = data.token;
-                    document.getElementById('authToken').value = currentToken;
+                    document.getElementById('authToken').value = 'Session Cookie (Active)';
                     resultDiv.className = 'result success';
-                    resultDiv.textContent = `✅ Login successful!\nUser: ${data.name}\nToken: ${data.token}`;
+                    resultDiv.textContent = `✅ Login successful!\nUser: ${data.name}\nEmail: ${data.email}\nSession: Active`;
                 } else {
                     resultDiv.className = 'result error';
                     resultDiv.textContent = `❌ Login failed: ${data.message || 'Unknown error'}`;
@@ -464,17 +464,10 @@
         async function testGetCart() {
             const resultDiv = document.getElementById('cartResult');
             
-            if (!currentToken) {
-                resultDiv.className = 'result error';
-                resultDiv.textContent = '❌ Please login first to get your token';
-                return;
-            }
-            
             try {
+                // Use session-based authentication instead of Bearer token
                 const response = await fetch('/api/cart', {
-                    headers: {
-                        'Authorization': `Bearer ${currentToken}`
-                    }
+                    credentials: 'include'  // Include session cookies
                 });
                 const data = await response.json();
                 
@@ -496,28 +489,20 @@
             const serviceId = document.getElementById('serviceId').value;
             const quantity = document.getElementById('quantity').value;
             
-            if (!currentToken) {
-                resultDiv.className = 'result error';
-                resultDiv.textContent = '❌ Please login first to get your token';
-                return;
-            }
-            
             try {
                 // First ensure cart exists
                 await fetch('/api/cart', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${currentToken}`
-                    }
+                    credentials: 'include'
                 });
                 
                 // Then add item
                 const response = await fetch('/api/cart/item', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${currentToken}`
+                        'Content-Type': 'application/json'
                     },
+                    credentials: 'include',
                     body: JSON.stringify({
                         serviceId: parseInt(serviceId),
                         quantity: parseInt(quantity)
@@ -541,18 +526,10 @@
         async function testConfirmOrder() {
             const resultDiv = document.getElementById('orderResult');
             
-            if (!currentToken) {
-                resultDiv.className = 'result error';
-                resultDiv.textContent = '❌ Please login first to get your token';
-                return;
-            }
-            
             try {
                 const response = await fetch('/api/cart/confirm', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${currentToken}`
-                    }
+                    credentials: 'include'
                 });
                 const data = await response.json();
                 

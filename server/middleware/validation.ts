@@ -31,31 +31,34 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.substring(7);
+    
     try {
       const decoded = Buffer.from(token, 'base64').toString();
-      const [userId] = decoded.split(':');
+      const parts = decoded.split(':');
       
-      // Simple token validation - in production use proper JWT
-      if (userId) {
-        const { storage } = require('../storage');
-        storage.getUser(parseInt(userId)).then((user: any) => {
-          if (user) {
-            req.user = user;
-            return next();
-          }
-          return res.status(401).json({ message: "Invalid token" });
-        }).catch(() => {
-          return res.status(401).json({ message: "Invalid token" });
-        });
-      } else {
-        return res.status(401).json({ message: "Invalid token format" });
+      if (parts.length === 3) {
+        const [userId, email, timestamp] = parts;
+        
+        if (userId && !isNaN(parseInt(userId))) {
+          const { storage } = require('../storage');
+          storage.getUser(parseInt(userId)).then((user: any) => {
+            if (user && user.email === email) {
+              req.user = user;
+              return next();
+            }
+            return res.status(401).json({ message: "Invalid token" });
+          }).catch(() => {
+            return res.status(401).json({ message: "Invalid token" });
+          });
+          return; // Prevent further execution
+        }
       }
     } catch (error) {
-      return res.status(401).json({ message: "Invalid token format" });
+      // Token decode failed
     }
-  } else {
-    return res.status(401).json({ message: "Authentication required" });
   }
+  
+  return res.status(401).json({ message: "Authentication required" });
 }
 
 export function requireAdmin(req: Request, res: Response, next: NextFunction) {
