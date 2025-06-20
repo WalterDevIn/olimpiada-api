@@ -1,0 +1,841 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelCo - Premium Tourism Packages</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF6B6B',
+                        secondary: '#4ECDC4',
+                        neutral: '#2C3E50',
+                        success: '#27AE60',
+                        warning: '#F39C12',
+                        error: '#E74C3C'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                        'playfair': ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="font-inter bg-gray-50">
+    <!-- @COMPONENT: NavigationBar [user authentication state, cart count] -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-primary font-playfair">TravelCo</h1>
+                    </div>
+                    <div class="hidden md:block ml-10">
+                        <div class="flex items-baseline space-x-4">
+                            <a href="#" class="text-neutral hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors">Packages</a>
+                            <a href="#" class="text-neutral hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors">Destinations</a>
+                            <a href="#" class="text-neutral hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors">About</a>
+                            <a href="#" class="text-neutral hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors">Contact</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- @STATE: isAuthenticated:boolean = false -->
+                    <button data-event="click:toggleCart" class="relative p-2 text-neutral hover:text-primary transition-colors">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span data-bind="cart.itemCount" class="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                    </button>
+                    <button data-event="click:showLogin" class="text-neutral hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                        <i class="fas fa-user mr-2"></i>Login
+                    </button>
+                    <button data-event="click:showRegister" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition-all">
+                        Sign Up
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: NavigationBar -->
+
+    <!-- @COMPONENT: HeroSection [featured packages, search functionality] -->
+    <section class="relative h-96 lg:h-[500px] overflow-hidden">
+        <!-- Stunning tropical beach with crystal clear water and palm trees -->
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&h=1080');"></div>
+        <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+        <div class="relative z-10 flex items-center justify-center h-full">
+            <div class="text-center max-w-4xl mx-auto px-4">
+                <h1 class="text-4xl lg:text-6xl font-bold text-white mb-6 font-playfair">
+                    Discover Your Next Adventure
+                </h1>
+                <p class="text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
+                    From exotic beaches to mountain peaks, find your perfect travel package with expert curation and unbeatable prices.
+                </p>
+                <div class="bg-white p-6 rounded-xl shadow-lg max-w-2xl mx-auto">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-1">
+                            <input type="text" placeholder="Where do you want to go?" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                   data-bind="search.destination">
+                        </div>
+                        <div class="flex-1">
+                            <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                    data-bind="search.packageType">
+                                <option>Package Type</option>
+                                <option value="stay">Hotels & Stays</option>
+                                <option value="flight">Flights</option>
+                                <option value="car_rental">Car Rentals</option>
+                                <option value="package">Complete Packages</option>
+                            </select>
+                        </div>
+                        <button data-event="click:searchPackages" class="bg-primary text-white px-8 py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all">
+                            <i class="fas fa-search mr-2"></i>Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: HeroSection -->
+
+    <!-- @COMPONENT: FeaturedPackages [displays top 6 packages] -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl lg:text-4xl font-bold text-neutral mb-4 font-playfair">Featured Packages</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Handpicked destinations and experiences curated by our travel experts</p>
+            </div>
+            
+            <!-- @MAP: featuredPackages.map(package => ( -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Package Card 1 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" data-mock="true">
+                    <!-- Santorini Greece with white buildings and blue domes overlooking the sea -->
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" 
+                             alt="Santorini Greece sunset view" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">Featured</span>
+                        </div>
+                        <div class="absolute top-4 right-4">
+                            <button class="bg-white bg-opacity-80 p-2 rounded-full hover:bg-opacity-100 transition-all">
+                                <i class="fas fa-heart text-gray-600"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-secondary font-medium">Complete Package</span>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <span class="text-sm text-gray-600 ml-1" data-bind="package.rating">4.9</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold text-neutral mb-2" data-bind="package.name">Santorini Sunset Paradise</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-bind="package.description">7 days in the most beautiful Greek island with luxury accommodation, guided tours, and sunset dinner cruises.</p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-2xl font-bold text-neutral" data-bind="package.price">$2,499</span>
+                                <span class="text-sm text-gray-500">per person</span>
+                            </div>
+                            <button data-event="click:addToCart" data-package-id="1" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition-all">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Package Card 2 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" data-mock="true">
+                    <!-- Tokyo Japan neon lights and modern cityscape at night -->
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" 
+                             alt="Tokyo Japan cityscape at night" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute top-4 right-4">
+                            <button class="bg-white bg-opacity-80 p-2 rounded-full hover:bg-opacity-100 transition-all">
+                                <i class="fas fa-heart text-gray-600"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-secondary font-medium">Cultural Experience</span>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <span class="text-sm text-gray-600 ml-1" data-bind="package.rating">4.8</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold text-neutral mb-2" data-bind="package.name">Tokyo Adventure</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-bind="package.description">Immerse yourself in Japan's capital with authentic experiences, guided city tours, and traditional ryokan stays.</p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-2xl font-bold text-neutral" data-bind="package.price">$3,299</span>
+                                <span class="text-sm text-gray-500">per person</span>
+                            </div>
+                            <button data-event="click:addToCart" data-package-id="2" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition-all">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Package Card 3 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" data-mock="true">
+                    <!-- Swiss Alps mountain landscape with snow-capped peaks and green valleys -->
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" 
+                             alt="Swiss Alps mountain scenery" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute top-4 right-4">
+                            <button class="bg-white bg-opacity-80 p-2 rounded-full hover:bg-opacity-100 transition-all">
+                                <i class="fas fa-heart text-gray-600"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-secondary font-medium">Adventure</span>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <span class="text-sm text-gray-600 ml-1" data-bind="package.rating">4.7</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold text-neutral mb-2" data-bind="package.name">Swiss Alps Explorer</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-bind="package.description">Mountain adventures with hiking trails, scenic train rides, and luxury alpine accommodations in Switzerland.</p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-2xl font-bold text-neutral" data-bind="package.price">$2,899</span>
+                                <span class="text-sm text-gray-500">per person</span>
+                            </div>
+                            <button data-event="click:addToCart" data-package-id="3" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition-all">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Package Card 4 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" data-mock="true">
+                    <!-- Bali Indonesia rice terraces and tropical landscape -->
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" 
+                             alt="Bali Indonesia rice terraces" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute top-4 right-4">
+                            <button class="bg-white bg-opacity-80 p-2 rounded-full hover:bg-opacity-100 transition-all">
+                                <i class="fas fa-heart text-gray-600"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-secondary font-medium">Wellness Retreat</span>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <span class="text-sm text-gray-600 ml-1" data-bind="package.rating">4.9</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold text-neutral mb-2" data-bind="package.name">Bali Wellness Escape</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-bind="package.description">Rejuvenate in paradise with spa treatments, yoga sessions, and authentic Balinese cultural experiences.</p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-2xl font-bold text-neutral" data-bind="package.price">$1,999</span>
+                                <span class="text-sm text-gray-500">per person</span>
+                            </div>
+                            <button data-event="click:addToCart" data-package-id="4" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition-all">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Package Card 5 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" data-mock="true">
+                    <!-- Machu Picchu Peru ancient ruins in the mountains -->
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1587595431973-160d0d94add1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" 
+                             alt="Machu Picchu Peru ancient ruins" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute top-4 right-4">
+                            <button class="bg-white bg-opacity-80 p-2 rounded-full hover:bg-opacity-100 transition-all">
+                                <i class="fas fa-heart text-gray-600"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-secondary font-medium">Historical</span>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <span class="text-sm text-gray-600 ml-1" data-bind="package.rating">4.8</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold text-neutral mb-2" data-bind="package.name">Machu Picchu Journey</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-bind="package.description">Discover ancient Incan civilization with guided tours, traditional cuisine, and breathtaking Andean landscapes.</p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-2xl font-bold text-neutral" data-bind="package.price">$2,699</span>
+                                <span class="text-sm text-gray-500">per person</span>
+                            </div>
+                            <button data-event="click:addToCart" data-package-id="5" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition-all">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Package Card 6 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer group" data-mock="true">
+                    <!-- Iceland Northern Lights aurora borealis over snowy landscape -->
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1531366936337-7c912a4589a7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" 
+                             alt="Iceland Northern Lights aurora borealis" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute top-4 right-4">
+                            <button class="bg-white bg-opacity-80 p-2 rounded-full hover:bg-opacity-100 transition-all">
+                                <i class="fas fa-heart text-gray-600"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-secondary font-medium">Natural Wonder</span>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <span class="text-sm text-gray-600 ml-1" data-bind="package.rating">4.9</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold text-neutral mb-2" data-bind="package.name">Iceland Northern Lights</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-bind="package.description">Witness the magical aurora borealis with glacier tours, hot springs, and cozy Nordic accommodations.</p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-2xl font-bold text-neutral" data-bind="package.price">$3,499</span>
+                                <span class="text-sm text-gray-500">per person</span>
+                            </div>
+                            <button data-event="click:addToCart" data-package-id="6" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition-all">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+            
+            <div class="text-center mt-12">
+                <button data-event="click:viewAllPackages" class="bg-white text-neutral border-2 border-neutral px-8 py-3 rounded-lg font-medium hover:bg-neutral hover:text-white transition-all">
+                    View All Packages
+                </button>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: FeaturedPackages -->
+
+    <!-- @COMPONENT: TrustSection [testimonials and trust indicators] -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl lg:text-4xl font-bold text-neutral mb-4 font-playfair">Why Choose TravelCo</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Join thousands of satisfied travelers who trust us with their dream vacations</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <div class="text-center">
+                    <div class="bg-primary bg-opacity-10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-shield-alt text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-neutral mb-2">Secure Booking</h3>
+                    <p class="text-gray-600">Your payments and personal information are protected with industry-leading security measures.</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-secondary bg-opacity-10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-headset text-2xl text-secondary"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-neutral mb-2">24/7 Support</h3>
+                    <p class="text-gray-600">Our travel experts are available around the clock to assist you before, during, and after your trip.</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-success bg-opacity-10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-medal text-2xl text-success"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-neutral mb-2">Best Price Guarantee</h3>
+                    <p class="text-gray-600">We guarantee the best prices on all our packages or we'll match any competitor's offer.</p>
+                </div>
+            </div>
+
+            <!-- Trust Statistics -->
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                    <div>
+                        <div class="text-3xl font-bold text-primary mb-2" data-bind="stats.happyCustomers">50,000+</div>
+                        <div class="text-gray-600">Happy Customers</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-secondary mb-2" data-bind="stats.destinations">200+</div>
+                        <div class="text-gray-600">Destinations</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-success mb-2" data-bind="stats.yearsExperience">15+</div>
+                        <div class="text-gray-600">Years Experience</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-warning mb-2" data-bind="stats.rating">4.9</div>
+                        <div class="text-gray-600">Average Rating</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: TrustSection -->
+
+    <!-- @COMPONENT: ShoppingCartSidebar [cart items, quantities, total] -->
+    <!-- @STATE: isCartOpen:boolean = false -->
+    <div id="cartSidebar" class="fixed inset-y-0 right-0 z-50 w-96 bg-white shadow-xl transform translate-x-full transition-transform duration-300">
+        <div class="flex flex-col h-full">
+            <div class="flex items-center justify-between p-4 border-b">
+                <h2 class="text-lg font-semibold text-neutral">Shopping Cart</h2>
+                <button data-event="click:closeCart" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="fas fa-times text-gray-600"></i>
+                </button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-4">
+                <!-- @MAP: cart.items.map(item => ( -->
+                <div class="space-y-4" data-mock="true">
+                    <!-- Cart Item 1 -->
+                    <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                        <!-- Santorini Greece white buildings thumbnail -->
+                        <img src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100" 
+                             alt="Santorini package thumbnail" 
+                             class="w-16 h-16 object-cover rounded-lg">
+                        <div class="flex-1">
+                            <h4 class="font-medium text-neutral" data-bind="item.name">Santorini Sunset Paradise</h4>
+                            <p class="text-sm text-gray-600" data-bind="item.price">$2,499 per person</p>
+                            <div class="flex items-center space-x-2 mt-2">
+                                <button data-event="click:decreaseQuantity" class="w-8 h-8 flex items-center justify-center bg-white rounded border hover:bg-gray-50 transition-colors">
+                                    <i class="fas fa-minus text-xs"></i>
+                                </button>
+                                <span class="text-sm font-medium" data-bind="item.quantity">2</span>
+                                <button data-event="click:increaseQuantity" class="w-8 h-8 flex items-center justify-center bg-white rounded border hover:bg-gray-50 transition-colors">
+                                    <i class="fas fa-plus text-xs"></i>
+                                </button>
+                                <button data-event="click:removeItem" class="ml-4 text-error hover:bg-error hover:text-white p-1 rounded transition-colors">
+                                    <i class="fas fa-trash text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cart Item 2 -->
+                    <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                        <!-- Bali Indonesia rice terraces thumbnail -->
+                        <img src="https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100" 
+                             alt="Bali package thumbnail" 
+                             class="w-16 h-16 object-cover rounded-lg">
+                        <div class="flex-1">
+                            <h4 class="font-medium text-neutral" data-bind="item.name">Bali Wellness Escape</h4>
+                            <p class="text-sm text-gray-600" data-bind="item.price">$1,999 per person</p>
+                            <div class="flex items-center space-x-2 mt-2">
+                                <button data-event="click:decreaseQuantity" class="w-8 h-8 flex items-center justify-center bg-white rounded border hover:bg-gray-50 transition-colors">
+                                    <i class="fas fa-minus text-xs"></i>
+                                </button>
+                                <span class="text-sm font-medium" data-bind="item.quantity">1</span>
+                                <button data-event="click:increaseQuantity" class="w-8 h-8 flex items-center justify-center bg-white rounded border hover:bg-gray-50 transition-colors">
+                                    <i class="fas fa-plus text-xs"></i>
+                                </button>
+                                <button data-event="click:removeItem" class="ml-4 text-error hover:bg-error hover:text-white p-1 rounded transition-colors">
+                                    <i class="fas fa-trash text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+            </div>
+            
+            <div class="border-t p-4 space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-lg font-semibold text-neutral">Total:</span>
+                    <span class="text-xl font-bold text-primary" data-bind="cart.total">$6,997</span>
+                </div>
+                <button data-event="click:proceedToCheckout" class="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all">
+                    Proceed to Checkout
+                </button>
+                <button data-event="click:continueShopping" class="w-full bg-gray-200 text-neutral py-3 rounded-lg font-medium hover:bg-gray-300 transition-all">
+                    Continue Shopping
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: ShoppingCartSidebar -->
+
+    <!-- @COMPONENT: LoginModal [authentication form] -->
+    <!-- @STATE: isLoginModalOpen:boolean = false -->
+    <div id="loginModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-neutral">Welcome Back</h2>
+                    <button data-event="click:closeLoginModal" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                        <i class="fas fa-times text-gray-600"></i>
+                    </button>
+                </div>
+                
+                <form data-event="submit:handleLogin" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-neutral mb-2">Email</label>
+                        <input type="email" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                               placeholder="Enter your email"
+                               data-bind="login.email">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-neutral mb-2">Password</label>
+                        <input type="password" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                               placeholder="Enter your password"
+                               data-bind="login.password">
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                            <span class="ml-2 text-sm text-gray-600">Remember me</span>
+                        </label>
+                        <button type="button" data-event="click:showPasswordRecovery" class="text-sm text-primary hover:underline">
+                            Forgot password?
+                        </button>
+                    </div>
+                    <button type="submit" class="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all">
+                        Sign In
+                    </button>
+                </form>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-gray-600">Don't have an account? 
+                        <button data-event="click:showRegisterModal" class="text-primary hover:underline font-medium">Sign up</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: LoginModal -->
+
+    <!-- @COMPONENT: AdminDashboard [admin panel with package management] -->
+    <!-- @STATE: isAdmin:boolean = false, showAdminDashboard:boolean = false -->
+    <div id="adminDashboard" class="hidden">
+        <div class="bg-white min-h-screen">
+            <!-- Admin Navigation -->
+            <nav class="bg-neutral text-white shadow-lg">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center h-16">
+                        <div class="flex items-center">
+                            <h1 class="text-xl font-bold">TravelCo Admin Panel</h1>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <span class="text-sm" data-bind="admin.name">Welcome, Admin</span>
+                            <button data-event="click:logoutAdmin" class="bg-primary px-4 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition-all">
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Admin Content -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <!-- Dashboard Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-lg shadow border-l-4 border-primary">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">Total Orders</p>
+                                <p class="text-2xl font-bold text-neutral" data-bind="dashboard.totalOrders">1,247</p>
+                            </div>
+                            <i class="fas fa-shopping-cart text-primary text-2xl"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow border-l-4 border-secondary">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">Revenue</p>
+                                <p class="text-2xl font-bold text-neutral" data-bind="dashboard.revenue">$2.4M</p>
+                            </div>
+                            <i class="fas fa-dollar-sign text-secondary text-2xl"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow border-l-4 border-success">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">Active Packages</p>
+                                <p class="text-2xl font-bold text-neutral" data-bind="dashboard.activePackages">89</p>
+                            </div>
+                            <i class="fas fa-box text-success text-2xl"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow border-l-4 border-warning">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">Pending Orders</p>
+                                <p class="text-2xl font-bold text-neutral" data-bind="dashboard.pendingOrders">23</p>
+                            </div>
+                            <i class="fas fa-clock text-warning text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Package Management -->
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                        <h2 class="text-xl font-semibold text-neutral">Package Management</h2>
+                        <button data-event="click:addNewPackage" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition-all">
+                            <i class="fas fa-plus mr-2"></i>Add Package
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Package</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <!-- @MAP: packages.map(package => ( -->
+                                <tr data-mock="true">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <!-- Santorini package thumbnail -->
+                                            <img src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100" 
+                                                 alt="Package thumbnail" 
+                                                 class="w-10 h-10 object-cover rounded-lg mr-4">
+                                            <div>
+                                                <div class="text-sm font-medium text-neutral" data-bind="package.name">Santorini Sunset Paradise</div>
+                                                <div class="text-sm text-gray-500" data-bind="package.destination">Greece</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-secondary bg-opacity-10 text-secondary" data-bind="package.type">Complete Package</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral" data-bind="package.price">$2,499</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-success bg-opacity-10 text-success">Active</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                        <button data-event="click:editPackage" class="text-primary hover:text-opacity-80">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button data-event="click:deletePackage" class="text-error hover:text-opacity-80">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- @END_MAP )) -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: AdminDashboard -->
+
+    <!-- @COMPONENT: Footer [company info, links, newsletter] -->
+    <footer class="bg-neutral text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold mb-4 font-playfair">TravelCo</h3>
+                    <p class="text-gray-300 mb-4">Your trusted partner for unforgettable travel experiences around the world.</p>
+                    <div class="flex space-x-4">
+                        <button class="w-10 h-10 bg-primary rounded-full flex items-center justify-center hover:bg-opacity-80 transition-all">
+                            <i class="fab fa-facebook-f"></i>
+                        </button>
+                        <button class="w-10 h-10 bg-primary rounded-full flex items-center justify-center hover:bg-opacity-80 transition-all">
+                            <i class="fab fa-twitter"></i>
+                        </button>
+                        <button class="w-10 h-10 bg-primary rounded-full flex items-center justify-center hover:bg-opacity-80 transition-all">
+                            <i class="fab fa-instagram"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Destinations</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Packages</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Refund Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Newsletter</h4>
+                    <p class="text-gray-300 mb-4">Subscribe to get special offers and updates</p>
+                    <div class="flex">
+                        <input type="email" placeholder="Your email" 
+                               class="flex-1 px-4 py-2 rounded-l-lg bg-gray-700 text-white placeholder-gray-400 border-0 focus:ring-2 focus:ring-primary outline-none">
+                        <button class="bg-primary px-4 py-2 rounded-r-lg hover:bg-opacity-90 transition-all">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-12 pt-8 text-center text-gray-300">
+                <p>&copy; 2024 TravelCo. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <script>
+        (function() {
+            // TODO: Implement business logic, API calls, and state management
+            
+            // UI State Management
+            let uiState = {
+                isCartOpen: false,
+                isLoginModalOpen: false,
+                isAdmin: false,
+                showAdminDashboard: false
+            };
+
+            // Cart functionality
+            function toggleCart() {
+                uiState.isCartOpen = !uiState.isCartOpen;
+                const cartSidebar = document.getElementById('cartSidebar');
+                if (uiState.isCartOpen) {
+                    cartSidebar.classList.remove('translate-x-full');
+                } else {
+                    cartSidebar.classList.add('translate-x-full');
+                }
+            }
+
+            // Modal functionality
+            function showLoginModal() {
+                uiState.isLoginModalOpen = true;
+                const loginModal = document.getElementById('loginModal');
+                loginModal.classList.remove('hidden');
+                loginModal.classList.add('flex');
+            }
+
+            function closeLoginModal() {
+                uiState.isLoginModalOpen = false;
+                const loginModal = document.getElementById('loginModal');
+                loginModal.classList.add('hidden');
+                loginModal.classList.remove('flex');
+            }
+
+            // Admin dashboard toggle
+            function toggleAdminDashboard() {
+                uiState.showAdminDashboard = !uiState.showAdminDashboard;
+                const adminDashboard = document.getElementById('adminDashboard');
+                const mainContent = document.querySelector('body > :not(#adminDashboard)');
+                
+                if (uiState.showAdminDashboard) {
+                    adminDashboard.classList.remove('hidden');
+                    // Hide main content
+                } else {
+                    adminDashboard.classList.add('hidden');
+                    // Show main content
+                }
+            }
+
+            // Event listeners setup
+            document.addEventListener('DOMContentLoaded', function() {
+                // Cart events
+                document.querySelectorAll('[data-event*="toggleCart"]').forEach(el => {
+                    el.addEventListener('click', toggleCart);
+                });
+                
+                document.querySelectorAll('[data-event*="closeCart"]').forEach(el => {
+                    el.addEventListener('click', toggleCart);
+                });
+
+                // Login modal events
+                document.querySelectorAll('[data-event*="showLogin"]').forEach(el => {
+                    el.addEventListener('click', showLoginModal);
+                });
+                
+                document.querySelectorAll('[data-event*="closeLoginModal"]').forEach(el => {
+                    el.addEventListener('click', closeLoginModal);
+                });
+
+                // Add to cart events
+                document.querySelectorAll('[data-event*="addToCart"]').forEach(el => {
+                    el.addEventListener('click', function(e) {
+                        const packageId = e.target.dataset.packageId;
+                        // TODO: Add item to cart via API
+                        console.log('Adding package to cart:', packageId);
+                        
+                        // Show feedback
+                        const originalText = e.target.textContent;
+                        e.target.textContent = 'Added!';
+                        e.target.classList.add('bg-success');
+                        
+                        setTimeout(() => {
+                            e.target.textContent = originalText;
+                            e.target.classList.remove('bg-success');
+                        }, 1500);
+                    });
+                });
+
+                // Form submission events
+                document.querySelectorAll('[data-event*="handleLogin"]').forEach(el => {
+                    el.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        // TODO: Handle login authentication
+                        console.log('Login form submitted');
+                        closeLoginModal();
+                    });
+                });
+
+                // Search functionality
+                document.querySelectorAll('[data-event*="searchPackages"]').forEach(el => {
+                    el.addEventListener('click', function() {
+                        // TODO: Implement package search
+                        console.log('Search packages');
+                    });
+                });
+
+                // Close modal when clicking outside
+                document.getElementById('loginModal').addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeLoginModal();
+                    }
+                });
+            });
+
+            // Expose functions for testing
+            window.TravelCoUI = {
+                toggleCart,
+                showLoginModal,
+                closeLoginModal,
+                toggleAdminDashboard
+            };
+        })();
+    </script>
+</body>
+</html>
