@@ -8,6 +8,7 @@ import { cartController } from "./controllers/cartController";
 import { orderController } from "./controllers/orderController";
 import { invoiceController } from "./controllers/invoiceController";
 import { insertServiceSchema, addCartItemSchema } from "@shared/schema";
+import cors from "cors";
 
 export function registerRoutes(app: Express): Server {
   // Security middleware
@@ -15,6 +16,8 @@ export function registerRoutes(app: Express): Server {
   
   // Authentication routes
   setupAuth(app);
+
+  app.use(cors());
 
   // Services routes (Admin only for CUD operations)
   app.post('/api/services', validateRequest(insertServiceSchema), serviceController.createService);
